@@ -5,6 +5,8 @@
 //  Created by Alex Rozanski on 08/01/2010.
 //  Copyright 2010 Alex Rozanski http://perspx.com
 //
+//  NSCoder Additions by Colin Wheeler
+//
 
 #import "SourceListItem.h"
 
@@ -16,6 +18,12 @@
 @synthesize icon;
 @synthesize badgeValue;
 @synthesize children;
+
+static NSString * const kTitleKey =      @"title";
+static NSString * const kIdentifierKey = @"identifier";
+static NSString * const kIconKey =       @"icon";
+static NSString * const kBadgeValueKey = @"badgeValue";
+static NSString * const kChildrenKey =   @"children";
 
 #pragma mark -
 #pragma mark Init/Dealloc
@@ -78,5 +86,58 @@
 {
 	return icon!=nil;
 }
+
+#pragma mark -
+#pragma mark Description
+
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"SourceListItem Title:%@ Identifier:%@ BadgeValue: %d",
+			self.title,
+			self.identifier,
+			self.badgeValue];
+}
+
+#pragma mark -
+#pragma mark NSCoder Methods
+
+- (id)initWithCoder:(NSCoder *)coder
+{
+	if(self = [super init]){
+		
+		if ([coder isKindOfClass:[NSKeyedUnarchiver class]]) {
+			
+			title = [[coder decodeObjectForKey:kTitleKey] retain];
+			identifier = [[coder decodeObjectForKey:kIdentifierKey] retain];
+			icon = [[NSImage alloc] initWithData:[coder decodeObjectForKey:kIconKey]];
+			badgeValue = [coder decodeIntegerForKey:kBadgeValueKey];
+			children = [[coder decodeObjectForKey:kChildrenKey] copy];
+		}
+		else {
+			[NSException raise:NSInvalidArchiveOperationException
+						format:@"Only supports NSKeyedUnarchiver coders"];
+		}
+	}
+	
+	return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+	if ([coder isKindOfClass:[NSKeyedArchiver class]]) {
+		
+		[coder encodeObject:title forKey:kTitleKey];
+		[coder encodeObject:identifier forKey:kIdentifierKey];
+		[coder encodeObject:[icon TIFFRepresentation] forKey:kIconKey];
+		[coder encodeInteger:badgeValue forKey:kBadgeValueKey];
+		[coder encodeObject:children forKey:kChildrenKey];
+		
+    }
+    else {
+        [NSException raise:NSInvalidArchiveOperationException
+                    format:@"Only supports NSKeyedArchiver coders"];
+    }
+}
+
 
 @end

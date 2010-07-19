@@ -31,15 +31,15 @@
 	NSImage *icon;
 	NSInteger badgeValue;
 	
-	NSArray *children;
+	NSMutableArray *children;
 }
 
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSString *identifier;
-@property (nonatomic, retain) NSImage *icon;
+@property (copy) NSString *title;
+@property (copy) NSString *identifier;
+@property (retain) NSImage *icon;
 @property NSInteger badgeValue;
 
-@property (nonatomic, copy) NSArray *children;
+@property (copy) NSMutableArray *children;
 
 //Convenience methods
 + (id)itemWithTitle:(NSString*)aTitle identifier:(NSString*)anIdentifier;
@@ -49,5 +49,10 @@
 - (BOOL)hasBadge;
 - (BOOL)hasChildren;
 - (BOOL)hasIcon;
+
+- (id)initWithCoder:(NSCoder *)coder;
+- (void)encodeWithCoder:(NSCoder *)coder;
+
+- (NSString *)description;
 
 @end
